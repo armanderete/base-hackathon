@@ -25,7 +25,6 @@ import Animation9 from './animations/animation9.json';
 import Animation10 from './animations/animation10.json';
 import Animation11 from './animations/animation11.json';
 
-
 import DashboardAnimation from './animations/dashboard.json';
 import LeaderboardAnimation from './animations/leaderboard.json';
 
@@ -40,7 +39,7 @@ export default function Page() {
   const animations = [Animation1, Animation2, Animation3, Animation4, Animation5, Animation6, Animation7, Animation8, Animation9, Animation10, Animation11];
 
   // Array indicating whether each animation should loop
-  const animationLoopSettings = [true, false, true, false, true, false, true, false, true, false, true];
+  const animationLoopSettings = [false, false, false, false, false, false, false, false, false, false, false];
 
   // State to manage current animation index
   const [currentAnimationIndex, setCurrentAnimationIndex] = useState<number>(0);
@@ -238,13 +237,13 @@ export default function Page() {
     }
   };
 
-  // Handler for Prev button
+  // Handler for Prev button (using functional update)
   const handlePrev = () => {
-    const prevIndex = currentAnimationIndex -1 ;
-    setCurrentAnimationIndex(prevIndex);
-    setAnimationData(animations[prevIndex]);
-
-    // No isAnimating logic
+    setCurrentAnimationIndex(prevIndex => {
+      const newIndex = prevIndex - 1;
+      setAnimationData(animations[newIndex]);
+      return newIndex;
+    });
   };
 
   // Handler to open the primary drawer
@@ -314,7 +313,6 @@ export default function Page() {
               </button>
             </div>
           )}
-
 
           {/* Vote Button */}
           {address && voteButtonVisible && (
