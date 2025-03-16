@@ -240,7 +240,7 @@ export default function Page() {
 
   // Handler for Prev button
   const handlePrev = () => {
-    const prevIndex = currentAnimationIndex === 0 ? animations.length - 2 : currentAnimationIndex - 2;
+    const prevIndex = currentAnimationIndex -1 ;
     setCurrentAnimationIndex(prevIndex);
     setAnimationData(animations[prevIndex]);
 
