@@ -299,7 +299,19 @@ export default function Page() {
               }}
             />
           )}
-          {/* NEW: Bottom Menu Animation rendered on top with a higher z-index */}
+          {/* NEW: Full-screen overlay for left 20% */}
+          <button
+            onClick={handlePrev}
+            className="absolute top-0 left-0 w-[20%] h-full cursor-pointer md:hover:bg-white/20 bg-transparent border-0"
+            style={{ zIndex: 15 }}
+          ></button>
+          {/* NEW: Full-screen overlay for right 20% */}
+          <button
+            onClick={handleNext}
+            className="absolute top-0 right-0 w-[20%] h-full cursor-pointer md:hover:bg-white/20 bg-transparent border-0"
+            style={{ zIndex: 15 }}
+          ></button>
+          {/* NEW: Bottom Menu Animation rendered on top with a higher z-index and pointerEvents disabled */}
           <Lottie
             animationData={BottomMenu}
             loop={true}
@@ -310,6 +322,7 @@ export default function Page() {
               top: 0,
               left: 0,
               zIndex: 20,
+              pointerEvents: 'none'
             }}
           />
 
@@ -428,7 +441,19 @@ export default function Page() {
               }}
             />
           )}
-          {/* NEW: Bottom Menu Animation rendered on top with a higher z-index */}
+          {/* NEW: Full-screen overlay for left 20% */}
+          <button
+            onClick={handlePrev}
+            className="absolute top-0 left-0 w-[20%] h-full cursor-pointer bg-transparent border-0"
+            style={{ zIndex: 15 }}
+          ></button>
+          {/* NEW: Full-screen overlay for right 20% */}
+          <button
+            onClick={handleNext}
+            className="absolute top-0 right-0 w-[20%] h-full cursor-pointer bg-transparent border-0"
+            style={{ zIndex: 15 }}
+          ></button>
+          {/* NEW: Bottom Menu Animation rendered on top with a higher z-index and pointerEvents disabled */}
           <Lottie
             animationData={BottomMenu}
             loop={true}
@@ -439,6 +464,7 @@ export default function Page() {
               top: 0,
               left: 0,
               zIndex: 20,
+              pointerEvents: 'none'
             }}
           />
         </div>
