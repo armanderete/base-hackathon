@@ -20,6 +20,7 @@ import Animation4 from './animations/animation4.json';
 import Animation5 from './animations/animation5.json';
 import Animation6 from './animations/animation6.json';
 import Animation7 from './animations/animation7.json';
+import BottomMenu from './animations/bottom-menu.json'; // NEW: Import bottom-menu animation
 
 import DashboardAnimation from './animations/dashboard.json';
 import LeaderboardAnimation from './animations/leaderboard.json';
@@ -298,6 +299,19 @@ export default function Page() {
               }}
             />
           )}
+          {/* NEW: Bottom Menu Animation rendered on top with a higher z-index */}
+          <Lottie
+            animationData={BottomMenu}
+            loop={true}
+            style={{
+              width: '100%',
+              height: '100%',
+              position: 'absolute',
+              top: 0,
+              left: 0,
+              zIndex: 20,
+            }}
+          />
 
           {/* Vote Button */}
           {address && voteButtonVisible && (
@@ -414,6 +428,19 @@ export default function Page() {
               }}
             />
           )}
+          {/* NEW: Bottom Menu Animation rendered on top with a higher z-index */}
+          <Lottie
+            animationData={BottomMenu}
+            loop={true}
+            style={{
+              width: '100%',
+              height: '100%',
+              position: 'absolute',
+              top: 0,
+              left: 0,
+              zIndex: 20,
+            }}
+          />
         </div>
 
         {/* Blue Container */}
