@@ -33,7 +33,7 @@ export default function Page() {
   const { address } = useAccount();
 
   // Array of animations in order
-  const animations = [Animation1, Animation2, Animation3, Animation4, Animation5, Animation6, Animation7];
+  const animations = [Animation1, Animation2, Animation3, Animation4, Animation5, Animation6];
 
   // Array indicating whether each animation should loop
   const animationLoopSettings = [false, false, false, false, false, false, false, false, false, false, false];
