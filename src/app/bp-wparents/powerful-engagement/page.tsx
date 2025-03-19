@@ -4,13 +4,13 @@ import { useAccount } from 'wagmi';
 import { ethers } from 'ethers'; // Import ethers
 import Lottie from 'lottie-react';
 import Image from 'next/image';
-import LoginButton from '../../components/LoginButton';
-import SignupButton from '../../components/SignupButton';
+import LoginButton from '../../../components/LoginButton';
+import SignupButton from '../../../components/SignupButton';
 import abi from './abi.json'; // Import ABI from the JSON file
-import '.././global.css';
-import { getBasename, type Basename } from '../../basenames';
-import { getEnsName } from '../../ensnames';
-import { truncateWalletAddress } from '../../utils'; // Assuming you have this utility function
+import '../.././global.css';
+import { getBasename, type Basename } from '../../../basenames';
+import { getEnsName } from '../../../ensnames';
+import { truncateWalletAddress } from '../../../utils'; // Assuming you have this utility function
 
 // Import your animations
 import Animation1 from './animations/animation1.json';
@@ -33,10 +33,10 @@ export default function Page() {
   const { address } = useAccount();
 
   // Array of animations in order
-  const animations = [Animation1, Animation2, Animation3, Animation4, Animation5, Animation6];
+  const animations = [Animation1, Animation2, Animation3, Animation4, Animation5];
 
   // Array indicating whether each animation should loop
-  const animationLoopSettings = [false, false, false, false, false, false];
+  const animationLoopSettings = [false, false, false, false, false];
 
   // State to manage current animation index
   const [currentAnimationIndex, setCurrentAnimationIndex] = useState<number>(0);

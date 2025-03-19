@@ -4,13 +4,13 @@ import { useAccount } from 'wagmi';
 import { ethers } from 'ethers'; // Import ethers
 import Lottie from 'lottie-react';
 import Image from 'next/image';
-import LoginButton from '../../components/LoginButton';
-import SignupButton from '../../components/SignupButton';
+import LoginButton from '../../../components/LoginButton';
+import SignupButton from '../../../components/SignupButton';
 import abi from './abi.json'; // Import ABI from the JSON file
-import '.././global.css';
-import { getBasename, type Basename } from '../../basenames';
-import { getEnsName } from '../../ensnames';
-import { truncateWalletAddress } from '../../utils'; // Assuming you have this utility function
+import '../.././global.css';
+import { getBasename, type Basename } from '../../../basenames';
+import { getEnsName } from '../../../ensnames';
+import { truncateWalletAddress } from '../../../utils'; // Assuming you have this utility function
 
 // Import your animations
 import Animation1 from './animations/animation1.json';
