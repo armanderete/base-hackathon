@@ -95,50 +95,6 @@ export default function Page() {
   const provider = new ethers.providers.JsonRpcProvider(ALCHEMY_API_URL);
   const contract = new ethers.Contract(CONTRACT_ADDRESS, abi, provider);
 
-  // Fetch all Assigned events to get unique user addresses
-  const fetchAllAddresses = async () => {
-    try {
-      const filter = contract.filters.Assigned();
-      const events = await contract.queryFilter(filter, 0, 'latest');
-      const addressesSet = new Set<string>();
-      events.forEach((event) => {
-        if (event.args) {
-          const userAddress = event.args.user;
-          if (userAddress.toLowerCase() !== CONTRACT_ADDRESS.toLowerCase()) {
-            addressesSet.add(userAddress);
-          }
-        }
-      });
-      return Array.from(addressesSet);
-    } catch (err) {
-      console.error('Error fetching Assigned events:', err);
-      throw err;
-    }
-  };
-
-  // Fetch balance for a single address
-  const fetchBalance = async (userAddress: string) => {
-    try {
-      const balance = await contract.getCommunityUSDC(userAddress);
-      const balanceInCents = balance.div(ethers.BigNumber.from(10000));
-      return balanceInCents.toNumber();
-    } catch (err) {
-      console.error(`Error fetching balance for ${userAddress}:`, err);
-      return '--';
-    }
-  };
-
-  // Fetch Community Pool Balance
-  const fetchCommunityPoolBalance = async () => {
-    try {
-      const poolBalance = await contract.unassignedPoolBalance();
-      const formattedBalance = (poolBalance.toNumber() / 1000000).toFixed(0);
-      return `$${formattedBalance}`;
-    } catch (err) {
-      console.error('Error fetching community pool balance:', err);
-      return '--';
-    }
-  };
 
   useEffect(() => {
     if (address && !animationPlayed) {
@@ -147,63 +103,6 @@ export default function Page() {
       setShowButtons(true);
       setLoading(true);
 
-      // Fetch data from smart contract
-      const fetchData = async () => {
-        try {
-          const addresses = await fetchAllAddresses();
-          if (addresses.length === 0) {
-            setError('No Assigned events found.');
-            setLoading(false);
-            return;
-          }
-          const balancePromises = addresses.map(async (addr: string) => {
-            const balance = await fetchBalance(addr);
-            return { address: addr, balance };
-          });
-          const results = await Promise.all(balancePromises);
-          setBalances(results);
-          console.log('Fetched Balances:', results);
-
-          const poolBalance = await fetchCommunityPoolBalance();
-          setCommunityPoolBalance(poolBalance);
-          console.log('Community Pool Balance:', poolBalance);
-
-          const top10Results = results
-            .filter((item) => typeof item.balance === 'number')
-            .sort((a, b) => (b.balance as number) - (a.balance as number))
-            .slice(0, 10);
-          setTop10(top10Results);
-          console.log('Top 10 Balances:', top10Results);
-
-          const userBalanceObj = results.find(
-            (item) => item.address.toLowerCase() === address?.toLowerCase()
-          );
-          const fetchedUserBalance = userBalanceObj ? userBalanceObj.balance : null;
-          setUserBalance(fetchedUserBalance);
-          console.log('User Balance:', fetchedUserBalance);
-
-          // Compute and set the top 10 users' information
-          let top10UserInfosArray: { place: string; userInfo: string; balanceInfo: string }[] = [];
-          for (let i = 0; i < top10Results.length; i++) {
-            const place = `${i + 1}${getOrdinalSuffix(i + 1)} place`;
-            const ensName = await getEnsName(top10Results[i].address as `0x${string}`);
-            const baseName = await getBasename(top10Results[i].address as `0x${string}`);
-            const truncatedAddress = truncateWalletAddress(top10Results[i]?.address);
-            const userInfo = ensName || baseName || truncatedAddress;
-            const balanceInfo =
-              typeof top10Results[i]?.balance === 'number' ? top10Results[i].balance.toString() : 'N/A';
-            top10UserInfosArray.push({ place, userInfo, balanceInfo });
-          }
-          setTop10UserInfos(top10UserInfosArray);
-        } catch (err) {
-          console.error('Error executing calculations:', err);
-          setError('An error occurred while executing calculations.');
-        } finally {
-          setLoading(false);
-        }
-      };
-
-      fetchData();
     }
   }, [address, animationPlayed, currentAnimationIndex, animations, animationLoopSettings]);
 
