@@ -95,16 +95,15 @@ export default function Page() {
   const provider = new ethers.providers.JsonRpcProvider(ALCHEMY_API_URL);
   const contract = new ethers.Contract(CONTRACT_ADDRESS, abi, provider);
 
-
+  // Modified useEffect: Removed the "address &&" check so that animations are visible regardless of wallet connection.
   useEffect(() => {
-    if (address && !animationPlayed) {
+    if (!animationPlayed) {
       setAnimationData(animations[currentAnimationIndex]);
       setAnimationPlayed(true);
       setShowButtons(true);
       setLoading(true);
-
     }
-  }, [address, animationPlayed, currentAnimationIndex, animations, animationLoopSettings]);
+  }, [animationPlayed, currentAnimationIndex, animations, animationLoopSettings]);
 
   // Function to get ordinal suffix
   const getOrdinalSuffix = (i: number) => {
@@ -140,7 +139,6 @@ export default function Page() {
 
   // Handler for Play/Pause button (toggles state)
   const handlePlayPause = () => {
-    console.log('Button clicked. Current paused state:', isAnimationPaused);
     setIsAnimationPaused(!isAnimationPaused);
   };
 
@@ -148,14 +146,10 @@ export default function Page() {
   useEffect(() => {
     if (lottieRef.current) {
       if (isAnimationPaused) {
-        console.log('useEffect: Pausing animation');
         lottieRef.current.pause();
       } else {
-        console.log('useEffect: Playing animation');
         lottieRef.current.play();
       }
-    } else {
-      console.log('useEffect: lottieRef.current is null');
     }
   }, [isAnimationPaused]);
 
@@ -174,10 +168,7 @@ export default function Page() {
     <div className="min-h-screen bg-black flex flex-col relative">
       {/* Mobile Green Container (Login/User Wallet) - in normal flow to push yellow down */}
       <div className="green-container md:hidden">
-        <div
-          className="flex justify-end items-center"
-          style={{ padding: '5px' }}
-        >
+        <div className="flex justify-end items-center" style={{ padding: '5px' }}>
           <SignupButton />
           {!address && <LoginButton />}
         </div>
@@ -205,19 +196,19 @@ export default function Page() {
         {/* Full-screen overlay for left 20% */}
         <button
           onClick={handlePrev}
-          className="absolute top-0 left-0 w-[20%] h-full cursor-pointer md:hover:bg-white/20 bg-transparent border-0"
+          className="absolute top-0 left-0 w-[20%] h-full cursor-pointer bg-transparent border-0"
           style={{ zIndex: 15 }}
         ></button>
         {/* Full-screen overlay for right 20% */}
         <button
           onClick={handleNext}
-          className="absolute top-0 right-0 w-[20%] h-full cursor-pointer md:hover:bg-white/20 bg-transparent border-0"
+          className="absolute top-0 right-0 w-[20%] h-full cursor-pointer bg-transparent border-0"
           style={{ zIndex: 15 }}
         ></button>
         {/* Full-screen overlay for play/pause button in the center (60% width) */}
         <button
           onClick={handlePlayPause}
-          className="absolute top-0 left-[20%] w-[60%] h-full cursor-pointer md:hover:bg-white/20 bg-transparent border-0"
+          className="absolute top-0 left-[20%] w-[60%] h-full cursor-pointer bg-transparent border-0"
           style={{ zIndex: 15 }}
         ></button>
         {/* Bottom Menu Animation rendered on top */}
@@ -273,10 +264,7 @@ export default function Page() {
         <div className="blue-container relative">
           {/* Prev and Next Buttons */}
           {showButtons && address && (
-            <div
-              className="absolute top-0 right-0 z-20"
-              style={{ paddingTop: '5px', paddingRight: '5px' }}
-            >
+            <div className="absolute top-0 right-0 z-20" style={{ paddingTop: '5px', paddingRight: '5px' }}>
               {(currentAnimationIndex !== 0 || hasSeenLastAnimation) && (
                 <button
                   className="prev-button px-2 py-1 bg-gray-700 text-white rounded hover:bg-gray-600 transition"
@@ -312,7 +300,6 @@ export default function Page() {
           }`}
           onClick={drawerState === 'primary-open' ? handleClosePrimaryDrawer : undefined}
         ></div>
-
         {/* Drawer Content */}
         <div
           className="relative bg-black rounded-t-lg overflow-hidden transform transition-transform duration-300 ease-in-out w-11/12 md:w-auto md:h-4/5 aspect-square md:aspect-square"
