@@ -50,7 +50,7 @@ export default function Page() {
   // State to manage visibility of Prev and Next buttons
   const [showButtons, setShowButtons] = useState<boolean>(false);
 
-  // State to manage visibility of the vote_button
+  // State to manage visibility of the vote_button (removed in this task)
   const [voteButtonVisible, setVoteButtonVisible] = useState<boolean>(true);
 
   // State to manage drawer states
@@ -75,7 +75,7 @@ export default function Page() {
 
   const [top10, setTop10] = useState<{ address: string; balance: number }[]>([]);
 
-  // New state variable for top 10 users' information
+  // New state variable for top 10 users' information (extra displays removed)
   const [top10UserInfos, setTop10UserInfos] = useState<
     { place: string; userInfo: string; balanceInfo: string }[]
   >([]);
@@ -100,7 +100,6 @@ export default function Page() {
     try {
       const filter = contract.filters.Assigned();
       const events = await contract.queryFilter(filter, 0, 'latest');
-
       const addressesSet = new Set<string>();
       events.forEach((event) => {
         if (event.args) {
@@ -110,7 +109,6 @@ export default function Page() {
           }
         }
       });
-
       return Array.from(addressesSet);
     } catch (err) {
       console.error('Error fetching Assigned events:', err);
@@ -148,26 +146,21 @@ export default function Page() {
       setAnimationPlayed(true);
       setShowButtons(true);
       setLoading(true);
-      // No need to set isAnimating
 
       // Fetch data from smart contract
       const fetchData = async () => {
         try {
           const addresses = await fetchAllAddresses();
-
           if (addresses.length === 0) {
             setError('No Assigned events found.');
             setLoading(false);
             return;
           }
-
           const balancePromises = addresses.map(async (addr: string) => {
             const balance = await fetchBalance(addr);
             return { address: addr, balance };
           });
-
           const results = await Promise.all(balancePromises);
-
           setBalances(results);
           console.log('Fetched Balances:', results);
 
@@ -179,7 +172,6 @@ export default function Page() {
             .filter((item) => typeof item.balance === 'number')
             .sort((a, b) => (b.balance as number) - (a.balance as number))
             .slice(0, 10);
-
           setTop10(top10Results);
           console.log('Top 10 Balances:', top10Results);
 
@@ -192,7 +184,6 @@ export default function Page() {
 
           // Compute and set the top 10 users' information
           let top10UserInfosArray: { place: string; userInfo: string; balanceInfo: string }[] = [];
-
           for (let i = 0; i < top10Results.length; i++) {
             const place = `${i + 1}${getOrdinalSuffix(i + 1)} place`;
             const ensName = await getEnsName(top10Results[i].address as `0x${string}`);
@@ -201,11 +192,8 @@ export default function Page() {
             const userInfo = ensName || baseName || truncatedAddress;
             const balanceInfo =
               typeof top10Results[i]?.balance === 'number' ? top10Results[i].balance.toString() : 'N/A';
-
-            // Populate the top10UserInfosArray
             top10UserInfosArray.push({ place, userInfo, balanceInfo });
           }
-
           setTop10UserInfos(top10UserInfosArray);
         } catch (err) {
           console.error('Error executing calculations:', err);
@@ -223,20 +211,13 @@ export default function Page() {
   const getOrdinalSuffix = (i: number) => {
     const j = i % 10,
       k = i % 100;
-    if (j === 1 && k !== 11) {
-      return 'st';
-    }
-    if (j === 2 && k !== 12) {
-      return 'nd';
-    }
-    if (j === 3 && k !== 13) {
-      return 'rd';
-    }
+    if (j === 1 && k !== 11) return 'st';
+    if (j === 2 && k !== 12) return 'nd';
+    if (j === 3 && k !== 13) return 'rd';
     return 'th';
   };
 
-  // Handler for Next button - now plays the first animation again when at the end.
-  // Also, if the user reaches the last animation, mark hasSeenLastAnimation true.
+  // Handler for Next button
   const handleNext = () => {
     const nextIndex = currentAnimationIndex === animations.length - 1 ? 0 : currentAnimationIndex + 1;
     if (currentAnimationIndex === animations.length - 1) {
@@ -258,13 +239,13 @@ export default function Page() {
     setTimeout(() => setIsPrevProcessing(false), 100);
   };
 
-  // Handler for Play/Pause button (only toggles state)
+  // Handler for Play/Pause button (toggles state)
   const handlePlayPause = () => {
     console.log('Button clicked. Current paused state:', isAnimationPaused);
     setIsAnimationPaused(!isAnimationPaused);
   };
 
-  // useEffect to control play/pause on the Lottie instance when isAnimationPaused changes
+  // useEffect to control play/pause on the Lottie instance
   useEffect(() => {
     if (lottieRef.current) {
       if (isAnimationPaused) {
@@ -279,36 +260,38 @@ export default function Page() {
     }
   }, [isAnimationPaused]);
 
-  // Handler to open the primary drawer
-  const handleVoteButtonClick = () => {
-    setDrawerState('primary-open');
-  };
-
-  // Handler to close the primary drawer
+  // Drawer handlers (vote button removed)
   const handleClosePrimaryDrawer = () => {
     setDrawerState('closed');
   };
-
-  // Handler to open the secondary drawer
   const handleOpenSecondaryDrawer = () => {
     setDrawerState('secondary-open');
   };
-
-  // Handler to close the secondary drawer and reopen the primary drawer
   const handleCloseSecondaryDrawer = () => {
     setDrawerState('primary-open');
   };
 
   return (
     <div className="min-h-screen bg-black flex flex-col relative">
+      {/* Mobile Green Container (Login/User Wallet) - in normal flow to push yellow down */}
+      <div className="green-container md:hidden">
+        <div
+          className="flex justify-end items-center"
+          style={{ padding: '5px' }}
+        >
+          <SignupButton />
+          {!address && <LoginButton />}
+        </div>
+      </div>
+
       {/* Single Lottie Container (Yellow Container) - shown on all viewports */}
       <div className="yellow-container relative block">
         {/* Main Animation */}
         {animationData && (
           <Lottie
-            lottieRef={lottieRef} // Pass the ref to the Lottie component
+            lottieRef={lottieRef}
             animationData={animationData}
-            loop={animationLoopSettings[currentAnimationIndex]} // true or false
+            loop={animationLoopSettings[currentAnimationIndex]}
             onComplete={!isAnimationPaused ? handleNext : undefined}
             style={{
               width: '100%',
@@ -362,7 +345,7 @@ export default function Page() {
           <SignupButton />
           {!address && <LoginButton />}
         </div>
-        {/* Prev and Next Buttons moved here */}
+        {/* Prev and Next Buttons */}
         {showButtons && address && (
           <div className="flex justify-center mt-4">
             {(currentAnimationIndex !== 0 || hasSeenLastAnimation) && (
@@ -387,18 +370,6 @@ export default function Page() {
 
       {/* Mobile View */}
       <div className="block md:hidden">
-        {/* Green Container */}
-        <div className="green-container relative">
-          {/* Login Buttons */}
-          <div
-            className="absolute top-0 right-0 flex items-center"
-            style={{ paddingTop: '5px', paddingRight: '5px' }}
-          >
-            <SignupButton />
-            {!address && <LoginButton />}
-          </div>
-        </div>
-
         {/* Blue Container */}
         <div className="blue-container relative">
           {/* Prev and Next Buttons */}
@@ -446,7 +417,7 @@ export default function Page() {
         {/* Drawer Content */}
         <div
           className="relative bg-black rounded-t-lg overflow-hidden transform transition-transform duration-300 ease-in-out w-11/12 md:w-auto md:h-4/5 aspect-square md:aspect-square"
-          onClick={(e) => e.stopPropagation()} // Prevent click from closing drawer
+          onClick={(e) => e.stopPropagation()}
         >
           {/* Close Button */}
           <button
@@ -456,18 +427,16 @@ export default function Page() {
           >
             &times;
           </button>
-
           {/* Drawer Container */}
           <div className="drawer-container w-full h-full relative">
             {/* Lottie Animation */}
             <Lottie
-              key="dashboard" // Unique key for dashboard animation
+              key="dashboard"
               animationData={DashboardAnimation}
-              loop={true} // This animation loops indefinitely
+              loop={true}
               className="w-full h-full"
             />
-
-            {/* Removed: Pool balance, user balance, and top10UserInfos displays */}
+            {/* Extra displays removed */}
           </div>
         </div>
       </div>
@@ -485,11 +454,10 @@ export default function Page() {
           }`}
           onClick={drawerState === 'secondary-open' ? handleCloseSecondaryDrawer : undefined}
         ></div>
-
         {/* Drawer Content */}
         <div
           className="relative bg-black rounded-t-lg overflow-hidden transform transition-transform duration-300 ease-in-out w-11/12 md:w-auto md:h-4/5 aspect-square md:aspect-square"
-          onClick={(e) => e.stopPropagation()} // Prevent click from closing drawer
+          onClick={(e) => e.stopPropagation()}
         >
           {/* Close Button */}
           <button
@@ -499,18 +467,16 @@ export default function Page() {
           >
             &times;
           </button>
-
           {/* Drawer Container */}
           <div className="drawer-container w-full h-full relative">
             {/* Leaderboard Lottie Animation */}
             <Lottie
-              key="leaderboard" // Unique key for leaderboard animation
+              key="leaderboard"
               animationData={LeaderboardAnimation}
-              loop={true} // This animation loops indefinitely
+              loop={true}
               className="w-full h-full"
             />
-
-            {/* Removed: User balance and top10UserInfos displays */}
+            {/* Extra displays removed */}
           </div>
         </div>
       </div>
