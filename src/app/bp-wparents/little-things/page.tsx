@@ -1,8 +1,8 @@
 'use client';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useAccount } from 'wagmi';
 import { ethers } from 'ethers'; // Import ethers
-import Lottie from 'lottie-react';
+import Lottie, { LottieRefCurrentProps } from 'lottie-react';
 import Image from 'next/image';
 import LoginButton from '../../../components/LoginButton';
 import SignupButton from '../../../components/SignupButton';
@@ -85,6 +85,11 @@ export default function Page() {
 
   // NEW: State variable to track if the user has seen the last animation (resets on refresh)
   const [hasSeenLastAnimation, setHasSeenLastAnimation] = useState(false);
+
+  // NEW: Ref for the main Lottie instance to control play/pause
+  const lottieRef = useRef<LottieRefCurrentProps>(null);
+  // NEW: State to control whether the animation is paused
+  const [isAnimationPaused, setIsAnimationPaused] = useState(false);
 
   // Initialize ethers provider and contract
   const provider = new ethers.providers.JsonRpcProvider(ALCHEMY_API_URL);
@@ -253,6 +258,27 @@ export default function Page() {
     setTimeout(() => setIsPrevProcessing(false), 100);
   };
 
+  // Handler for Play/Pause button (only toggles state)
+  const handlePlayPause = () => {
+    console.log('Button clicked. Current paused state:', isAnimationPaused);
+    setIsAnimationPaused(!isAnimationPaused);
+  };
+
+  // useEffect to control play/pause on the Lottie instance when isAnimationPaused changes
+  useEffect(() => {
+    if (lottieRef.current) {
+      if (isAnimationPaused) {
+        console.log('useEffect: Pausing animation');
+        lottieRef.current.pause();
+      } else {
+        console.log('useEffect: Playing animation');
+        lottieRef.current.play();
+      }
+    } else {
+      console.log('useEffect: lottieRef.current is null');
+    }
+  }, [isAnimationPaused]);
+
   // Handler to open the primary drawer
   const handleVoteButtonClick = () => {
     setDrawerState('primary-open');
@@ -275,137 +301,137 @@ export default function Page() {
 
   return (
     <div className="min-h-screen bg-black flex flex-col relative">
-      {/* Desktop View */}
-      <div className="hidden md:block">
-        {/* Brown Container (left side) */}
-        <div className="brown-container"></div>
-
-        {/* Yellow Container (center) */}
-        <div className="yellow-container relative">
-          {/* Main Animations */}
-          {animationData && (
-            <Lottie
-              key={currentAnimationIndex} // Force re-mount on animation change
-              animationData={animationData}
-              loop={animationLoopSettings[currentAnimationIndex]} // true or false
-              onComplete={handleNext} // Automatically calls handleNext when animation completes
-              style={{
-                width: '100%',
-                height: '100%',
-                position: 'absolute',
-                top: 0,
-                left: 0,
-                zIndex: 10,
-              }}
-            />
-          )}
-          {/* NEW: Full-screen overlay for left 20% */}
-          <button
-            onClick={handlePrev}
-            className="absolute top-0 left-0 w-[20%] h-full cursor-pointer md:hover:bg-white/20 bg-transparent border-0"
-            style={{ zIndex: 15 }}
-          ></button>
-          {/* NEW: Full-screen overlay for right 20% */}
-          <button
-            onClick={handleNext}
-            className="absolute top-0 right-0 w-[20%] h-full cursor-pointer md:hover:bg-white/20 bg-transparent border-0"
-            style={{ zIndex: 15 }}
-          ></button>
-          {/* NEW: Bottom Menu Animation rendered on top with a higher z-index and pointerEvents disabled */}
+      {/* Single Lottie Container (Yellow Container) - shown on all viewports */}
+      <div className="yellow-container relative block">
+        {/* Main Animation */}
+        {animationData && (
           <Lottie
-            animationData={BottomMenu}
-            loop={true}
+            lottieRef={lottieRef} // Pass the ref to the Lottie component
+            animationData={animationData}
+            loop={animationLoopSettings[currentAnimationIndex]} // true or false
+            onComplete={!isAnimationPaused ? handleNext : undefined}
             style={{
               width: '100%',
               height: '100%',
               position: 'absolute',
               top: 0,
               left: 0,
-              zIndex: 20,
-              pointerEvents: 'none'
+              zIndex: 10,
             }}
           />
+        )}
+        {/* Full-screen overlay for left 20% */}
+        <button
+          onClick={handlePrev}
+          className="absolute top-0 left-0 w-[20%] h-full cursor-pointer md:hover:bg-white/20 bg-transparent border-0"
+          style={{ zIndex: 15 }}
+        ></button>
+        {/* Full-screen overlay for right 20% */}
+        <button
+          onClick={handleNext}
+          className="absolute top-0 right-0 w-[20%] h-full cursor-pointer md:hover:bg-white/20 bg-transparent border-0"
+          style={{ zIndex: 15 }}
+        ></button>
+        {/* Full-screen overlay for play/pause button in the center (60% width) */}
+        <button
+          onClick={handlePlayPause}
+          className="absolute top-0 left-[20%] w-[60%] h-full cursor-pointer md:hover:bg-white/20 bg-transparent border-0"
+          style={{ zIndex: 15 }}
+        ></button>
+        {/* Bottom Menu Animation rendered on top */}
+        <Lottie
+          animationData={BottomMenu}
+          loop={true}
+          style={{
+            width: '100%',
+            height: '100%',
+            position: 'absolute',
+            top: 0,
+            left: 0,
+            zIndex: 20,
+            pointerEvents: 'none',
+          }}
+        />
 
-          {/* Vote Button */}
-          {address && voteButtonVisible && (
-            <button
-              onClick={handleVoteButtonClick}
-              className="vote-button z-20" // Use the class defined in global.css
-              aria-label="Vote Button"
-            >
-              <Image
-                src="/buttons/dashboardbutton.png"
-                alt="Vote Button"
-                width={100}
-                height={100}
-                className="object-contain"
-              />
-            </button>
-          )}
+        {/* Vote Button */}
+        {address && voteButtonVisible && (
+          <button
+            onClick={handleVoteButtonClick}
+            className="vote-button z-20" // Use the class defined in global.css
+            aria-label="Vote Button"
+          >
+            <Image
+              src="/buttons/dashboardbutton.png"
+              alt="Vote Button"
+              width={100}
+              height={100}
+              className="object-contain"
+            />
+          </button>
+        )}
 
-          {/* Error and Loading Indicators */}
-          {error && (
-            <div className="absolute top-4 left-1/2 transform -translate-x-1/2 bg-red-500 text-white px-4 py-2 rounded">
-              {error}
-            </div>
-          )}
-
-          {loading && (
-            <div className="absolute top-4 left-1/2 transform -translate-x-1/2 bg-gray-700 text-white px-4 py-2 rounded flex items-center">
-              <svg
-                className="animate-spin -ml-1 mr-3 h-5 w-5 text-white"
-                xmlns="http://www.w3.org/2000/svg"
-                fill="none"
-                viewBox="0 0 24 24"
-              >
-                <circle
-                  className="opacity-25"
-                  cx="12"
-                  cy="12"
-                  r="10"
-                  stroke="currentColor"
-                  strokeWidth="4"
-                ></circle>
-                <path
-                  className="opacity-75"
-                  fill="currentColor"
-                  d="M4 12a8 8 0 018-8v8H4z"
-                ></path>
-              </svg>
-              Loading...
-            </div>
-          )}
-        </div>
-
-        {/* Red Container (right side) */}
-        <div className="red-container">
-          {/* Login Buttons */}
-          <div className="flex justify-center" style={{ paddingTop: '10px' }}>
-            <SignupButton />
-            {!address && <LoginButton />}
+        {/* Error and Loading Indicators */}
+        {error && (
+          <div className="absolute top-4 left-1/2 transform -translate-x-1/2 bg-red-500 text-white px-4 py-2 rounded">
+            {error}
           </div>
-          {/* Prev and Next Buttons moved here */}
-          {showButtons && address && (
-            <div className="flex justify-center mt-4">
-              {(currentAnimationIndex !== 0 || hasSeenLastAnimation) && (
-                <button
-                  className="prev-button px-4 py-2 bg-gray-800 text-white rounded-lg hover:bg-gray-700 transition shadow-lg"
-                  onClick={handlePrev}
-                  aria-label="Previous Animation"
-                >
-                  Prev
-                </button>
-              )}
-              <button
-                className="next-button px-4 py-2 bg-gray-800 text-white rounded-lg hover:bg-gray-700 transition shadow-lg ml-4"
-                onClick={handleNext}
-                aria-label="Next Animation"
-              >
-                Next
-              </button>
-            </div>
-          )}
+        )}
+
+        {loading && (
+          <div className="absolute top-4 left-1/2 transform -translate-x-1/2 bg-gray-700 text-white px-4 py-2 rounded flex items-center">
+            <svg
+              className="animate-spin -ml-1 mr-3 h-5 w-5 text-white"
+              xmlns="http://www.w3.org/2000/svg"
+              fill="none"
+              viewBox="0 0 24 24"
+            >
+              <circle
+                className="opacity-25"
+                cx="12"
+                cy="12"
+                r="10"
+                stroke="currentColor"
+                strokeWidth="4"
+              ></circle>
+              <path
+                className="opacity-75"
+                fill="currentColor"
+                d="M4 12a8 8 0 018-8v8H4z"
+              ></path>
+            </svg>
+            Loading...
+          </div>
+        )}
+      </div>
+
+      {/* Desktop-only Red Container */}
+      <div className="hidden md:block red-container">
+        {/* Login Buttons */}
+        <div className="flex justify-center" style={{ paddingTop: '10px' }}>
+          <SignupButton />
+          {!address && <LoginButton />}
         </div>
+        {/* Prev and Next Buttons moved here */}
+        {showButtons && address && (
+          <div className="flex justify-center mt-4">
+            {(currentAnimationIndex !== 0 || hasSeenLastAnimation) && (
+              <button
+                className="prev-button px-4 py-2 bg-gray-800 text-white rounded-lg hover:bg-gray-700 transition shadow-lg"
+                onClick={handlePrev}
+                aria-label="Previous Animation"
+              >
+                Prev
+              </button>
+            )}
+            <button
+              className="next-button px-4 py-2 bg-gray-800 text-white rounded-lg hover:bg-gray-700 transition shadow-lg ml-4"
+              onClick={handleNext}
+              aria-label="Next Animation"
+            >
+              Next
+            </button>
+          </div>
+        )}
       </div>
 
       {/* Mobile View */}
@@ -420,53 +446,6 @@ export default function Page() {
             <SignupButton />
             {!address && <LoginButton />}
           </div>
-        </div>
-
-        {/* Yellow Container */}
-        <div className="yellow-container relative">
-          {/* Main Animations */}
-          {animationData && (
-            <Lottie
-              key={currentAnimationIndex} // Force re-mount on animation change
-              animationData={animationData}
-              loop={animationLoopSettings[currentAnimationIndex]} // true or false
-              onComplete={handleNext} // Automatically calls handleNext when animation completes
-              style={{
-                width: '100%',
-                height: '100%',
-                position: 'absolute',
-                top: 0,
-                left: 0,
-                zIndex: 10,
-              }}
-            />
-          )}
-          {/* NEW: Full-screen overlay for left 20% */}
-          <button
-            onClick={handlePrev}
-            className="absolute top-0 left-0 w-[20%] h-full cursor-pointer bg-transparent border-0"
-            style={{ zIndex: 15 }}
-          ></button>
-          {/* NEW: Full-screen overlay for right 20% */}
-          <button
-            onClick={handleNext}
-            className="absolute top-0 right-0 w-[20%] h-full cursor-pointer bg-transparent border-0"
-            style={{ zIndex: 15 }}
-          ></button>
-          {/* NEW: Bottom Menu Animation rendered on top with a higher z-index and pointerEvents disabled */}
-          <Lottie
-            animationData={BottomMenu}
-            loop={true}
-            style={{
-              width: '100%',
-              height: '100%',
-              position: 'absolute',
-              top: 0,
-              left: 0,
-              zIndex: 20,
-              pointerEvents: 'none'
-            }}
-          />
         </div>
 
         {/* Blue Container */}
