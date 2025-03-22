@@ -33,10 +33,10 @@ export default function Page() {
   const { address } = useAccount();
 
   // Array of animations in order
-  const animations = [Animation1];
+  const animations = [Animation1, Animation2];
 
   // Array indicating whether each animation should loop
-  const animationLoopSettings = [true];
+  const animationLoopSettings = [false, false];
 
   // State to manage current animation index
   const [currentAnimationIndex, setCurrentAnimationIndex] = useState<number>(0);
