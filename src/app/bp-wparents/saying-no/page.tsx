@@ -27,6 +27,9 @@ import Animation11 from './animations/animation11.json';
 import Animation12 from './animations/animation12.json';
 import Animation13 from './animations/animation13.json';
 import Animation14 from './animations/animation14.json';
+import Animation15 from './animations/animation15.json';
+import Animation16 from './animations/animation16.json';
+
 
 
 import BottomMenu from './animations/bottom-menu.json'; // NEW: Import bottom-menu animation
@@ -42,10 +45,10 @@ export default function Page() {
   const { address } = useAccount();
 
   // Array of animations in order
-  const animations = [Animation1, Animation2, Animation3, Animation4, Animation5, Animation6, Animation7, Animation8, Animation9, Animation10, Animation11, Animation12, Animation13, Animation14];
+  const animations = [Animation1, Animation2, Animation3, Animation4, Animation5, Animation6, Animation7, Animation8, Animation9, Animation10, Animation11, Animation12, Animation13, Animation14, Animation15, Animation16];
 
   // Array indicating whether each animation should loop
-  const animationLoopSettings = [true, false, true, false, true, false, true, false, true, false, true, false, true, true];
+  const animationLoopSettings = [true, false, true, false, true, false, true, false, true, false, true, false, true, true, false, true];
 
   // State to manage current animation index
   const [currentAnimationIndex, setCurrentAnimationIndex] = useState<number>(0);
