@@ -124,6 +124,22 @@ const activeStepCount = 3;  // ← step 0 included, adjust per recipe
 // Derive visible steps based on activeStepCount
 const visibleSteps = steps.slice(0, activeStepCount);
 
+// Define which steps have primary and secondary drawers
+const stepDrawerConfig = {
+  step0: { primary: false, secondary: false },
+  step1: { primary: true, secondary: false },
+  step2: { primary: false, secondary: false },
+  step3: { primary: false, secondary: false },
+  step4: { primary: false, secondary: false },
+  step5: { primary: false, secondary: false },
+  step6: { primary: false, secondary: false },
+  step7: { primary: false, secondary: false },
+  step8: { primary: false, secondary: false },
+  step9: { primary: false, secondary: false },
+  step10: { primary: false, secondary: false },
+  // Add more steps as needed
+};
+
 export default function Page() {
   const { address } = useAccount();
 
@@ -231,6 +247,9 @@ export default function Page() {
     return null;
   };
 
+  // Ensure the stepDrawerConfig is accessed with a valid key
+  const currentStepKey = `step${currentStep}` as keyof typeof stepDrawerConfig;
+
   return (
     <div className="min-h-screen bg-black flex flex-col relative">
       {/* Mobile Green Container (Login/User Wallet) - in normal flow to push yellow down */}
@@ -240,6 +259,18 @@ export default function Page() {
           {!address && <LoginButton />}
         </div>
       </div>
+
+      {/* Conditionally render the button in the red container based on the primary drawer setting */}
+      {stepDrawerConfig[currentStepKey].primary && (
+        <div className="red-container">
+          <button
+            onClick={() => setDrawerState('primary')}
+            className="open-primary-drawer-button"
+          >
+            Open Primary Drawer
+          </button>
+        </div>
+      )}
 
       {/* Single Lottie Container (Yellow Container) for Mobile */}
       <div className="yellow-container relative block md:hidden">
@@ -434,97 +465,6 @@ export default function Page() {
           />
         )}
       </div>
-
-      {/* Red Container for testing purposes */}
-      <div className="red-container">
-        {/* Button to open primary drawer - will delete later */}
-        <button
-          onClick={() => setDrawerState('primary')}
-          className="open-primary-drawer-button"
-        >
-          Open Primary Drawer
-        </button>
-      </div>
-
-      {/* Primary Drawer */}
-      {/* <div
-        className={`fixed inset-0 z-40 flex items-start justify-center transition-transform duration-300 ease-in-out transform ${
-          drawerState === 'primary-open' ? 'translate-y-0' : 'translate-y-[100vh]'
-        }`}
-      >
-        {/* Overlay */}
-        {/* <div
-          className={`absolute inset-0 bg-black opacity-50 transition-opacity duration-300 ease-in-out ${
-            drawerState === 'primary-open' ? 'opacity-50' : 'opacity-0 pointer-events-none'
-          }`}
-          onClick={drawerState === 'primary-open' ? handleClosePrimaryDrawer : undefined}
-        ></div> */}
-        {/* Drawer Content */}
-        {/* <div
-          className="relative bg-black rounded-t-lg overflow-hidden transform transition-transform duration-300 ease-in-out w-11/12 md:w-auto md:h-4/5 aspect-square md:aspect-square"
-          onClick={(e) => e.stopPropagation()}
-        >
-          {/* Close Button */}
-          {/* <button
-            className="absolute top-2 right-2 text-white text-xl focus:outline-none focus:ring-2 focus:ring-white rounded"
-            onClick={handleClosePrimaryDrawer}
-            aria-label="Close Primary Drawer"
-          >
-            &times;
-          </button> */}
-          {/* Drawer Container */}
-          {/* <div className="drawer-container w-full h-full relative">
-            {/* Lottie Animation */}
-            {/* <Lottie
-              key="dashboard"
-              animationData={DashboardAnimation}
-              loop={true}
-              className="w-full h-full"
-            /> */}
-            {/* Extra displays removed */}
-          {/* </div> */}
-        {/* </div> */}
-      {/* </div> */}
-
-      {/* Secondary Drawer */}
-      {/* <div
-        className={`fixed inset-0 z-50 flex items-start justify-center transition-transform duration-300 ease-in-out transform ${
-          drawerState === 'secondary-open' ? 'translate-y-0' : 'translate-y-[100vh]'
-        }`}
-      >
-        {/* Overlay */}
-        {/* <div
-          className={`absolute inset-0 bg-black opacity-50 transition-opacity duration-300 ease-in-out ${
-            drawerState === 'secondary-open' ? 'opacity-50' : 'opacity-0 pointer-events-none'
-          }`}
-          onClick={drawerState === 'secondary-open' ? handleCloseSecondaryDrawer : undefined}
-        ></div> */}
-        {/* Drawer Content */}
-        {/* <div
-          className="relative bg-black rounded-t-lg overflow-hidden transform transition-transform duration-300 ease-in-out w-11/12 md:w-auto md:h-4/5 aspect-square md:aspect-square"
-          onClick={(e) => e.stopPropagation()}
-        >
-          {/* Close Button */}
-          {/* <button
-            className="absolute top-2 right-2 text-white text-xl focus:outline-none focus:ring-2 focus:ring-white rounded"
-            onClick={handleCloseSecondaryDrawer}
-            aria-label="Close Secondary Drawer"
-          >
-            &times;
-          </button> */}
-          {/* Drawer Container */}
-          {/* <div className="drawer-container w-full h-full relative">
-            {/* Leaderboard Lottie Animation */}
-            {/* <Lottie
-              key="leaderboard"
-              animationData={LeaderboardAnimation}
-              loop={true}
-              className="w-full h-full"
-            /> */}
-            {/* Extra displays removed */}
-          {/* </div> */}
-        {/* </div> */}
-      {/* </div> */}
 
       {/* B-3 · Pass data into the drawer component */}
       <PrimarySecondaryDrawer
