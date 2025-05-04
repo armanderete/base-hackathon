@@ -260,18 +260,6 @@ export default function Page() {
         </div>
       </div>
 
-      {/* Conditionally render the button in the red container based on the primary drawer setting */}
-      {stepDrawerConfig[currentStepKey].primary && (
-        <div className="red-container">
-          <button
-            onClick={() => setDrawerState('primary')}
-            className="open-primary-drawer-button"
-          >
-            Open Primary Drawer
-          </button>
-        </div>
-      )}
-
       {/* Single Lottie Container (Yellow Container) for Mobile */}
       <div className="yellow-container relative block md:hidden">
         {/* Lottie Animation for Mobile */}
@@ -365,6 +353,23 @@ export default function Page() {
             className="recipe-steps-button"
             style={{ left: '63.5%', bottom: '4%' }}
             aria-label="Go to Step 9"
+          />
+        )}
+
+        {/* drawer button for mobile */}
+        {stepDrawerConfig[currentStepKey].primary && (
+          <button
+            onClick={() => setDrawerState('primary')}
+            style={{
+              backgroundColor: 'transparent',
+              width: '25%',
+              height: '12%',
+              position: 'absolute',
+              left: '73%',
+              bottom: '85%',
+              zIndex: 30, // Ensure button is above overlay
+            }}
+            aria-label="Open Primary Drawer"
           />
         )}
       </div>
@@ -462,6 +467,23 @@ export default function Page() {
             className="recipe-steps-button"
             style={{ left: '63.5%', bottom: '4%' }}
             aria-label="Go to Step 9"
+          />
+        )}
+
+        {/* drawer button for desktop */}
+        {stepDrawerConfig[currentStepKey].primary && (
+          <button
+            onClick={() => setDrawerState('primary')}
+            style={{
+              backgroundColor: 'transparent',
+              width: '25%',
+              height: '12%',
+              position: 'absolute',
+              left: '73%',
+              bottom: '85%',
+              zIndex: 30, // Ensure button is above overlay
+            }}
+            aria-label="Open Primary Drawer"
           />
         )}
       </div>

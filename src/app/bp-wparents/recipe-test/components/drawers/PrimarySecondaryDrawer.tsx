@@ -1,7 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import Lottie from 'lottie-react';
-import ReactMarkdown from 'react-markdown';
-import { documentToReactComponents } from '@contentful/rich-text-react-renderer';
 
 // Define the props interface
 interface PrimarySecondaryDrawerProps {
@@ -31,52 +29,6 @@ const PrimarySecondaryDrawer: React.FC<PrimarySecondaryDrawerProps> = ({
   top10UserInfos,
   calculateCompletionPercentage,
 }) => {
-  // We'll hold either markdown string or rich text content
-  const [markdownContent, setMarkdownContent] = useState<string | null>(null);
-  const [richTextContent, setRichTextContent] = useState<React.ReactNode | null>(null);
-
-  useEffect(() => {
-    async function fetchContent() {
-      try {
-        const spaceId = process.env.NEXT_PUBLIC_CONTENTFUL_SPACE_ID;
-        const environment = process.env.NEXT_PUBLIC_CONTENTFUL_ENVIRONMENT || 'master';
-        const accessToken = process.env.NEXT_PUBLIC_CONTENTFUL_ACCESS_TOKEN;
-        const entryId = "1DoP4pGwKTB6gGREatNrj7"; // Specific content entry id
-
-        console.log('Contentful Config:', { spaceId, environment, accessToken: accessToken?.substring(0, 5) + '...' });
-        const url = `https://cdn.contentful.com/spaces/${spaceId}/environments/${environment}/entries/${entryId}?access_token=${accessToken}`;
-        console.log('Fetching from URL:', url);
-
-        const response = await fetch(url);
-        const data = await response.json();
-        console.log('Contentful Response:', data);
-
-        if (data.fields && data.fields.text) {
-          const fieldValue = data.fields.text;
-          // If it's a plain string, use ReactMarkdown
-          if (typeof fieldValue === 'string') {
-            setMarkdownContent(fieldValue);
-          }
-          // If it's an object with nodeType (Contentful Rich Text)
-          else if (fieldValue.nodeType) {
-            setRichTextContent(documentToReactComponents(fieldValue));
-          }
-          // Otherwise, fallback to stringifying
-          else {
-            setMarkdownContent(JSON.stringify(fieldValue));
-          }
-        } else {
-          console.error('No text field found in response:', data);
-          setMarkdownContent("text failed to load");
-        }
-      } catch (error) {
-        console.error('Error fetching from Contentful:', error);
-        setMarkdownContent("text failed to load");
-      }
-    }
-    fetchContent();
-  }, []);
-
   return (
     <>
       {/* Primary Drawer */}
@@ -115,130 +67,6 @@ const PrimarySecondaryDrawer: React.FC<PrimarySecondaryDrawerProps> = ({
               loop
               className="w-full h-full"
             />
-
-            {/* Markdown / Rich Text Overlay */}
-            {markdownContent !== null ? (
-              <div
-                className="absolute inset-0 p-4 overflow-hidden [&>p]:mb-6"
-                style={{
-                  zIndex: 50,
-                  fontSize: 'min(3.5vw, 21px)',
-                  lineHeight: '1.2',
-                  display: 'flex',
-                  flexDirection: 'column',
-                  height: '100%'
-                }}
-              >
-                <ReactMarkdown>{markdownContent}</ReactMarkdown>
-              </div>
-            ) : richTextContent !== null ? (
-              <div
-                className="absolute inset-0 p-4 overflow-hidden [&>p]:mb-6"
-                style={{
-                  zIndex: 50,
-                  fontSize: 'min(3.5vw, 21px)',
-                  lineHeight: '1.2',
-                  display: 'flex',
-                  flexDirection: 'column',
-                  height: '100%'
-                }}
-              >
-                {richTextContent}
-              </div>
-            ) : null}
-
-            {/*
-            // Uncomment these blocks to restore the rendering of values:
-
-            {loading && (
-              <div className="absolute bg-yellow-300 text-black px-6 py-4 rounded flex flex-col items-center">
-                <p className="text-lg font-semibold">
-                  Fetching "community pool" data from the blockchain
-                </p>
-                <p className="mt-2 text-md">{calculateCompletionPercentage()} completed</p>
-              </div>
-            )}
-
-            {communityPoolBalance && communityPoolBalance !== '--' && !loading && (
-              <div
-                className="absolute"
-                style={{
-                  bottom: '53%',
-                  left: '34%',
-                  fontSize: '40px',
-                  fontWeight: 'bold',
-                  color: 'black',
-                  backgroundColor: 'transparent',
-                }}
-              >
-                {communityPoolBalance} USD
-              </div>
-            )}
-
-            {userBalance !== null && !loading && (
-              <div
-                className="absolute"
-                style={{
-                  bottom: '7%',
-                  left: '3%',
-                  fontSize: '30px',
-                  fontWeight: 'bold',
-                  color: 'DarkViolet',
-                  backgroundColor: 'transparent',
-                }}
-              >
-                ${userBalance}
-              </div>
-            )}
-
-            {top10.length > 0 && typeof top10[0].balance === 'number' && !loading && (
-              <div
-                className="absolute"
-                style={{
-                  bottom: '5%',
-                  left: '32%',
-                  fontSize: '25px',
-                  fontWeight: 'bold',
-                  color: 'black',
-                  backgroundColor: 'transparent',
-                }}
-              >
-                ${top10[0].balance}
-              </div>
-            )}
-
-            {top10.length > 1 && typeof top10[1].balance === 'number' && !loading && (
-              <div
-                className="absolute"
-                style={{
-                  bottom: '5%',
-                  left: '48%',
-                  fontSize: '25px',
-                  fontWeight: 'bold',
-                  color: 'black',
-                  backgroundColor: 'transparent',
-                }}
-              >
-                ${top10[1].balance}
-              </div>
-            )}
-
-            {top10.length > 2 && typeof top10[2].balance === 'number' && !loading && (
-              <div
-                className="absolute"
-                style={{
-                  bottom: '5%',
-                  left: '65%',
-                  fontSize: '25px',
-                  fontWeight: 'bold',
-                  color: 'black',
-                  backgroundColor: 'transparent',
-                }}
-              >
-                ${top10[2].balance}
-              </div>
-            )}
-            */}
           </div>
         </div>
       </div>
@@ -279,58 +107,6 @@ const PrimarySecondaryDrawer: React.FC<PrimarySecondaryDrawerProps> = ({
               loop
               className="w-full h-full"
             />
-
-            {/*
-            // Uncomment these blocks to restore the rendering of values:
-
-            {userBalance !== null && !loading && (
-              <div
-                className="absolute"
-                style={{
-                  bottom: '4%',
-                  left: '59%',
-                  fontSize: '22px',
-                  fontWeight: 'bold',
-                  color: 'MediumPurple',
-                  backgroundColor: 'transparent',
-                }}
-              >
-                ${userBalance}
-              </div>
-            )}
-
-            {top10UserInfos.length > 0 && !loading && (
-              <div
-                className="absolute left-[35%] bottom-[90%] text-[15px] md:text-[18px] font-bold text-black bg-transparent whitespace-nowrap"
-              >
-                {`${top10UserInfos[0].userInfo}`}
-              </div>
-            )}
-
-            {top10UserInfos.length > 0 && !loading && (
-              <div
-                className="absolute left-[5%] bottom-[90%] text-[18px] md:text-[23px] font-bold text-pink-500 bg-transparent whitespace-nowrap"
-              >
-                {`${top10UserInfos[0].balanceInfo}`}
-              </div>
-            )}
-
-            {top10UserInfos.length > 1 && !loading && (
-              <div
-                className="absolute left-[42%] bottom-[76%] text-[15px] md:text-[18px] font-bold text-black bg-transparent whitespace-nowrap"
-              >
-                {`${top10UserInfos[1].userInfo}`}
-              </div>
-            )}
-
-            {top10UserInfos.length > 1 && !loading && (
-              <div
-                className="absolute left-[27%] bottom-[75%] text-[15px] md:text-[18px] font-bold text-black bg-transparent whitespace-nowrap"
-              >
-                {`${top10UserInfos[1].balanceInfo}`}
-              </div>
-            )}
-            */}
           </div>
         </div>
       </div>
