@@ -115,7 +115,7 @@ const ALCHEMY_API_URL = process.env.NEXT_PUBLIC_ALCHEMY_API_URL;
 const CONTRACT_ADDRESS = '0xfe3Fc6cb04bA5958b0577a0c6528269964e7C8bF'; // Your contract address
 
 // Define how many steps to expose in this recipe
-const activeStepCount = 10;  // ← step 0 included, adjust per recipe
+const activeStepCount = 3;  // ← step 0 included, adjust per recipe
 
 // Derive visible steps based on activeStepCount
 const visibleSteps = steps.slice(0, activeStepCount);
@@ -141,34 +141,35 @@ export default function Page() {
   useEffect(() => {
     let canceled = false;
 
-    // 1 load video for the active step
-    import(`./animations/${steps[currentStep].videoLottie}`)
+    // Load current step
+    import(`./animations/${visibleSteps[currentStep].videoLottie}`)
       .then(m => !canceled && setVideoData(m.default));
 
-    // 2 load overlay (if any) for the active step
-    const ovlPath = steps[currentStep].overlayLottie;
+    // Load overlay if defined
+    const ovlPath = visibleSteps[currentStep].overlayLottie;
     if (ovlPath) {
       import(`./animations/${ovlPath}`)
         .then(m => !canceled && setOvlData(m.default));
     } else {
-      setOvlData(null); // no overlay on this step
+      setOvlData(null);
     }
 
-    // 3 prefetch prev/next to keep it snappy
+    // Prefetch neighbors
     [currentStep - 1, currentStep + 1].forEach(i => {
-      if (steps[i]) {
-        import(`./animations/${steps[i].videoLottie}`);
-        if (steps[i].overlayLottie) import(`./animations/${steps[i].overlayLottie}`);
+      if (visibleSteps[i]) {
+        import(`./animations/${visibleSteps[i].videoLottie}`);
+        if (visibleSteps[i].overlayLottie) {
+          import(`./animations/${visibleSteps[i].overlayLottie}`);
+        }
       }
     });
 
-    // cleanup when step changes or component unmounts
     return () => {
       canceled = true;
       setVideoData(null);
       setOvlData(null);
     };
-  }, [currentStep]); // <-- depend on currentStep
+  }, [currentStep, visibleSteps]);
 
   // Render background Lottie at z-index 0
   const renderBackground = () => (
@@ -188,7 +189,7 @@ export default function Page() {
 
   // Conditionally render overlay Lottie if available
   const renderOverlay = () => {
-    if (steps[currentStep].overlayLottie) {
+    if (visibleSteps[currentStep].overlayLottie) {
       return (
         <Lottie
           animationData={ovlData}
