@@ -265,7 +265,7 @@ a {
 }
 
 .recipe-steps-button {
-  background-color: white;
+  background-color: transparent;
   width: 27%;
   height: 11%;
   position: absolute;

@@ -34,6 +34,8 @@ const steps: Step[] = [
     title: 'step0',
     videoLottie: 'step0.json',
     overlayLottie: 'step0-overlay.json',
+    primaryDrawerLottie: 'step0-primarydrawer.json',
+    secondaryDrawerLottie: 'step0-secondarydrawer.json',
   },
   {
     id: 'step1',
@@ -410,6 +412,17 @@ export default function Page() {
             aria-label="Go to Step 9"
           />
         )}
+      </div>
+
+      {/* Red Container for testing purposes */}
+      <div className="red-container">
+        {/* Button to open primary drawer - will delete later */}
+        <button
+          onClick={() => setDrawerState('primary')}
+          className="open-primary-drawer-button"
+        >
+          Open Primary Drawer
+        </button>
       </div>
 
       {/* Primary Drawer */}
