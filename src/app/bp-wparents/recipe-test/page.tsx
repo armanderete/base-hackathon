@@ -8,9 +8,6 @@ import LoginButton from '../../../components/LoginButton';
 import SignupButton from '../../../components/SignupButton';
 import abi from './abi.json'; // Import ABI from the JSON file
 import '../.././global.css';
-// import { getBasename, type Basename } from '../../../basenames';
-// import { getEnsName } from '../../../ensnames';
-// import { truncateWalletAddress } from '../../../utils';
 
 
 import BottomMenu from './animations/bottom-menu.json'; // NEW: Import bottom-menu animation
@@ -32,6 +29,12 @@ interface Step {
 }
 
 const steps: Step[] = [
+  {
+    id: 'step0',
+    title: 'step0',
+    videoLottie: 'step0.json',
+    overlayLottie: 'step0-overlay.json',
+  },
   {
     id: 'step1',
     title: 'step1',
@@ -115,7 +118,7 @@ export default function Page() {
   const { address } = useAccount();
 
   // State to manage current step
-  const [currentStep, setCurrentStep] = useState<number>(0);
+  const [currentStep, setCurrentStep] = useState<number>(0); // Default to step0
 
   // State to manage drawer states
   const [drawerState, setDrawerState] = useState<'closed' | 'primary' | 'secondary'>('closed');
@@ -132,33 +135,71 @@ export default function Page() {
   useEffect(() => {
     let canceled = false;
 
-    // 1) Load current step's video Lottie
+    // 1 load video for the active step
     import(`./animations/${steps[currentStep].videoLottie}`)
-      .then(m => {
-        if (!canceled) setVideoData(m.default);
-      });
+      .then(m => !canceled && setVideoData(m.default));
 
-    // 2) Load current step's overlay Lottie
-    import(`./animations/${steps[currentStep].overlayLottie}`)
-      .then(m => {
-        if (!canceled) setOvlData(m.default);
-      });
+    // 2 load overlay (if any) for the active step
+    const ovlPath = steps[currentStep].overlayLottie;
+    if (ovlPath) {
+      import(`./animations/${ovlPath}`)
+        .then(m => !canceled && setOvlData(m.default));
+    } else {
+      setOvlData(null); // no overlay on this step
+    }
 
-    // 3) Prefetch prev/next video & overlay for snappier transitions
+    // 3 prefetch prev/next to keep it snappy
     [currentStep - 1, currentStep + 1].forEach(i => {
       if (steps[i]) {
         import(`./animations/${steps[i].videoLottie}`);
-        import(`./animations/${steps[i].overlayLottie}`);
+        if (steps[i].overlayLottie) import(`./animations/${steps[i].overlayLottie}`);
       }
     });
 
-    // Cleanup: tear down on step change or unmount
+    // cleanup when step changes or component unmounts
     return () => {
       canceled = true;
       setVideoData(null);
       setOvlData(null);
     };
-  }, [currentStep]);
+  }, [currentStep]); // <-- depend on currentStep
+
+  // Render background Lottie at z-index 0
+  const renderBackground = () => (
+    <Lottie
+      animationData={BgStaticLottie}
+      loop={true}
+      style={{
+        width: '100%',
+        height: '100%',
+        position: 'absolute',
+        top: 0,
+        left: 0,
+        zIndex: 0, // Ensure background is behind other elements
+      }}
+    />
+  );
+
+  // Conditionally render overlay Lottie if available
+  const renderOverlay = () => {
+    if (steps[currentStep].overlayLottie) {
+      return (
+        <Lottie
+          animationData={ovlData}
+          loop={true}
+          style={{
+            width: '100%',
+            height: '100%',
+            position: 'absolute',
+            top: 0,
+            left: 0,
+            zIndex: 20, // Ensure overlay is above step1
+          }}
+        />
+      );
+    }
+    return null;
+  };
 
   return (
     <div className="min-h-screen bg-black flex flex-col relative">
@@ -170,26 +211,94 @@ export default function Page() {
         </div>
       </div>
 
-      {/* Single Lottie Container (Yellow Container) - shown on all viewports */}
-      <div className="yellow-container relative block">
-        {/* Main Animation */}
-        {/* animationData && (
-          <Lottie
-            lottieRef={lottieRef}
-            animationData={animationData}
-            loop={animationLoopSettings[currentAnimationIndex]}
-            onComplete={!isAnimationPaused ? handleNext : undefined}
-            style={{
-              width: '100%',
-              height: '100%',
-              position: 'absolute',
-              top: 0,
-              left: 0,
-              zIndex: 10,
-            }}
-          />
-        ) */}
-        {/* Vote Button removed */}
+      {/* Single Lottie Container (Yellow Container) for Mobile */}
+      <div className="yellow-container relative block md:hidden">
+        {/* Lottie Animation for Mobile */}
+        <Lottie
+          animationData={videoData}
+          loop={true}
+          style={{
+            width: '100%',
+            height: '100%',
+            position: 'absolute',
+            top: 0,
+            left: 0,
+            zIndex: 10,
+          }}
+        />
+
+        {/* Background Lottie Animation for Mobile */}
+        {renderBackground()}
+
+        {/* Overlay Lottie Animation for Mobile */}
+        {renderOverlay()}
+
+        {/* Button to Jump to Step 1 for Mobile */}
+        <button
+          onClick={() => setCurrentStep(1)}
+          className="recipe-steps-button"
+          style={{
+            left: '3.5%',
+            bottom: '32.5%',
+          }}
+          aria-label="Go to Step 1"
+        />
+
+        {/* Button to Jump to Step 2 for Mobile */}
+        <button
+          onClick={() => setCurrentStep(2)}
+          className="recipe-steps-button"
+          style={{
+            left: '33.5%', // Default position, adjust as needed
+            bottom: '32.5%', // Default position, adjust as needed
+          }}
+          aria-label="Go to Step 2"
+        />
+      </div>
+
+      {/* Single Lottie Container (Yellow Container) for Desktop */}
+      <div className="yellow-container relative hidden md:block">
+        {/* Lottie Animation for Desktop */}
+        <Lottie
+          animationData={videoData}
+          loop={true}
+          style={{
+            width: '100%',
+            height: '100%',
+            position: 'absolute',
+            top: 0,
+            left: 0,
+            zIndex: 10,
+          }}
+        />
+
+        {/* Background Lottie Animation for Desktop */}
+        {renderBackground()}
+
+        {/* Overlay Lottie Animation for Desktop */}
+        {renderOverlay()}
+
+        {/* Button to Jump to Step 1 desktop*/}
+        <button
+          onClick={() => setCurrentStep(1)}
+          className="recipe-steps-button"
+          style={{
+            left: '3.5%',
+            bottom: '32.5%',
+          }}
+          aria-label="Go to Step 1"
+        />
+
+        {/* Button to Jump to Step 2 desktop*/}
+        <button
+          onClick={() => setCurrentStep(2)}
+          className="recipe-steps-button"
+          style={{
+            left: '33.5%', // Default position, adjust as needed
+            bottom: '32.5%', // Default position, adjust as needed
+          }}
+          aria-label="Go to Step 2"
+        />
       </div>
 
       {/* Primary Drawer */}
