@@ -114,6 +114,12 @@ const steps: Step[] = [
 const ALCHEMY_API_URL = process.env.NEXT_PUBLIC_ALCHEMY_API_URL;
 const CONTRACT_ADDRESS = '0xfe3Fc6cb04bA5958b0577a0c6528269964e7C8bF'; // Your contract address
 
+// Define how many steps to expose in this recipe
+const activeStepCount = 10;  // ← step 0 included, adjust per recipe
+
+// Derive visible steps based on activeStepCount
+const visibleSteps = steps.slice(0, activeStepCount);
+
 export default function Page() {
   const { address } = useAccount();
 
@@ -233,27 +239,79 @@ export default function Page() {
         {/* Overlay Lottie Animation for Mobile */}
         {renderOverlay()}
 
-        {/* Button to Jump to Step 1 for Mobile */}
-        <button
-          onClick={() => setCurrentStep(1)}
-          className="recipe-steps-button"
-          style={{
-            left: '3.5%',
-            bottom: '32.5%',
-          }}
-          aria-label="Go to Step 1"
-        />
-
-        {/* Button to Jump to Step 2 for Mobile */}
-        <button
-          onClick={() => setCurrentStep(2)}
-          className="recipe-steps-button"
-          style={{
-            left: '33.5%', // Default position, adjust as needed
-            bottom: '32.5%', // Default position, adjust as needed
-          }}
-          aria-label="Go to Step 2"
-        />
+        {/* Conditionally render each hard-coded button for mobile */}
+        {activeStepCount > 1 && (
+          <button
+            onClick={() => { setDrawerState('closed'); setCurrentStep(1); }}
+            className="recipe-steps-button"
+            style={{ left: '3.5%', bottom: '32.5%' }}
+            aria-label="Go to Step 1"
+          />
+        )}
+        {activeStepCount > 2 && (
+          <button
+            onClick={() => { setDrawerState('closed'); setCurrentStep(2); }}
+            className="recipe-steps-button"
+            style={{ left: '33.5%', bottom: '32.5%' }}
+            aria-label="Go to Step 2"
+          />
+        )}
+        {activeStepCount > 3 && (
+          <button
+            onClick={() => { setDrawerState('closed'); setCurrentStep(3); }}
+            className="recipe-steps-button"
+            style={{ left: '63.5%', bottom: '32.5%' }}
+            aria-label="Go to Step 3"
+          />
+        )}
+        {activeStepCount > 4 && (
+          <button
+            onClick={() => { setDrawerState('closed'); setCurrentStep(4); }}
+            className="recipe-steps-button"
+            style={{ left: '11%', bottom: '18.5%' }}
+            aria-label="Go to Step 4"
+          />
+        )}
+        {activeStepCount > 5 && (
+          <button
+            onClick={() => { setDrawerState('closed'); setCurrentStep(5); }}
+            className="recipe-steps-button"
+            style={{ left: '41%', bottom: '18.5%' }}
+            aria-label="Go to Step 5"
+          />
+        )}
+        {activeStepCount > 6 && (
+          <button
+            onClick={() => { setDrawerState('closed'); setCurrentStep(6); }}
+            className="recipe-steps-button"
+            style={{ left: '71%', bottom: '18.5%' }}
+            aria-label="Go to Step 6"
+          />
+        )}
+        {activeStepCount > 7 && (
+          <button
+            onClick={() => { setDrawerState('closed'); setCurrentStep(7); }}
+            className="recipe-steps-button"
+            style={{ left: '3.5%', bottom: '4%' }}
+            aria-label="Go to Step 7"
+          />
+        )}
+        {activeStepCount > 8 && (
+          <button
+            onClick={() => { setDrawerState('closed'); setCurrentStep(8); }}
+            className="recipe-steps-button"
+            style={{ left: '33.5%', bottom: '4%' }}
+            aria-label="Go to Step 8"
+          />
+        )}
+        {activeStepCount > 9 && (
+          <button
+            onClick={() => { setDrawerState('closed'); setCurrentStep(9); }}
+            className="recipe-steps-button"
+            style={{ left: '63.5%', bottom: '4%' }}
+            aria-label="Go to Step 9"
+          />
+        )}
       </div>
 
       {/* Single Lottie Container (Yellow Container) for Desktop */}
@@ -278,27 +336,79 @@ export default function Page() {
         {/* Overlay Lottie Animation for Desktop */}
         {renderOverlay()}
 
-        {/* Button to Jump to Step 1 desktop*/}
-        <button
-          onClick={() => setCurrentStep(1)}
-          className="recipe-steps-button"
-          style={{
-            left: '3.5%',
-            bottom: '32.5%',
-          }}
-          aria-label="Go to Step 1"
-        />
-
-        {/* Button to Jump to Step 2 desktop*/}
-        <button
-          onClick={() => setCurrentStep(2)}
-          className="recipe-steps-button"
-          style={{
-            left: '33.5%', // Default position, adjust as needed
-            bottom: '32.5%', // Default position, adjust as needed
-          }}
-          aria-label="Go to Step 2"
-        />
+        {/* Conditionally render each hard-coded button for desktop */}
+        {activeStepCount > 1 && (
+          <button
+            onClick={() => { setDrawerState('closed'); setCurrentStep(1); }}
+            className="recipe-steps-button"
+            style={{ left: '3.5%', bottom: '32.5%' }}
+            aria-label="Go to Step 1"
+          />
+        )}
+        {activeStepCount > 2 && (
+          <button
+            onClick={() => { setDrawerState('closed'); setCurrentStep(2); }}
+            className="recipe-steps-button"
+            style={{ left: '33.5%', bottom: '32.5%' }}
+            aria-label="Go to Step 2"
+          />
+        )}
+        {activeStepCount > 3 && (
+          <button
+            onClick={() => { setDrawerState('closed'); setCurrentStep(3); }}
+            className="recipe-steps-button"
+            style={{ left: '63.5%', bottom: '32.5%' }}
+            aria-label="Go to Step 3"
+          />
+        )}
+        {activeStepCount > 4 && (
+          <button
+            onClick={() => { setDrawerState('closed'); setCurrentStep(4); }}
+            className="recipe-steps-button"
+            style={{ left: '11%', bottom: '18.5%' }}
+            aria-label="Go to Step 4"
+          />
+        )}
+        {activeStepCount > 5 && (
+          <button
+            onClick={() => { setDrawerState('closed'); setCurrentStep(5); }}
+            className="recipe-steps-button"
+            style={{ left: '41%', bottom: '18.5%' }}
+            aria-label="Go to Step 5"
+          />
+        )}
+        {activeStepCount > 6 && (
+          <button
+            onClick={() => { setDrawerState('closed'); setCurrentStep(6); }}
+            className="recipe-steps-button"
+            style={{ left: '71%', bottom: '18.5%' }}
+            aria-label="Go to Step 6"
+          />
+        )}
+        {activeStepCount > 7 && (
+          <button
+            onClick={() => { setDrawerState('closed'); setCurrentStep(7); }}
+            className="recipe-steps-button"
+            style={{ left: '3.5%', bottom: '4%' }}
+            aria-label="Go to Step 7"
+          />
+        )}
+        {activeStepCount > 8 && (
+          <button
+            onClick={() => { setDrawerState('closed'); setCurrentStep(8); }}
+            className="recipe-steps-button"
+            style={{ left: '33.5%', bottom: '4%' }}
+            aria-label="Go to Step 8"
+          />
+        )}
+        {activeStepCount > 9 && (
+          <button
+            onClick={() => { setDrawerState('closed'); setCurrentStep(9); }}
+            className="recipe-steps-button"
+            style={{ left: '63.5%', bottom: '4%' }}
+            aria-label="Go to Step 9"
+          />
+        )}
       </div>
 
       {/* Primary Drawer */}
