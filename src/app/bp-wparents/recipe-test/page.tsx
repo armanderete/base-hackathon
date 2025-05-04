@@ -17,6 +17,8 @@ import LeaderboardAnimation from './animations/leaderboard.json';
 
 import BgStaticLottie from './animations/background.json';
 
+import PrimarySecondaryDrawer from './components/drawers/PrimarySecondaryDrawer';
+
 // Interface for the recipe steps
 
 interface Step {
@@ -136,6 +138,10 @@ export default function Page() {
   const [ovlData, setOvlData] = useState<any>(null);
   const [drwData, setDrwData] = useState<any>(null);
 
+  // B-1 · State for drawer Lottie JSON
+  const [primaryDrawerData, setPrimaryDrawerData] = useState<any>(null);
+  const [secondaryDrawerData, setSecondaryDrawerData] = useState<any>(null);
+
   // Initialize ethers provider and contract
   const provider = new ethers.providers.JsonRpcProvider(ALCHEMY_API_URL);
   const contract = new ethers.Contract(CONTRACT_ADDRESS, abi, provider);
@@ -172,6 +178,21 @@ export default function Page() {
       setOvlData(null);
     };
   }, [currentStep, visibleSteps]);
+
+  // B-2 · Lazy-load drawer Lotties on open
+  useEffect(() => {
+    let canceled = false;
+
+    if (drawerState === 'primary' && visibleSteps[currentStep].primaryDrawerLottie) {
+      import(`./animations/${visibleSteps[currentStep].primaryDrawerLottie}`)
+        .then(m => !canceled && setPrimaryDrawerData(m.default));
+    } else if (drawerState === 'secondary' && visibleSteps[currentStep].secondaryDrawerLottie) {
+      import(`./animations/${visibleSteps[currentStep].secondaryDrawerLottie}`)
+        .then(m => !canceled && setSecondaryDrawerData(m.default));
+    }
+
+    return () => { canceled = true; };
+  }, [drawerState, currentStep, visibleSteps]);
 
   // Render background Lottie at z-index 0
   const renderBackground = () => (
@@ -504,6 +525,24 @@ export default function Page() {
           {/* </div> */}
         {/* </div> */}
       {/* </div> */}
+
+      {/* B-3 · Pass data into the drawer component */}
+      <PrimarySecondaryDrawer
+        drawerState={
+          drawerState === 'primary' ? 'primary-open' :
+          drawerState === 'secondary' ? 'secondary-open' : 'closed'
+        }
+        handleClosePrimaryDrawer={() => setDrawerState('closed')}
+        handleCloseSecondaryDrawer={() => setDrawerState('closed')}
+        primaryAnimationData={primaryDrawerData}
+        secondaryAnimationData={secondaryDrawerData}
+        loading={false}
+        communityPoolBalance={'--'}
+        userBalance={null}
+        top10={[]}
+        top10UserInfos={[]}
+        calculateCompletionPercentage={() => '0%'}
+      />
     </div>
   );
 }

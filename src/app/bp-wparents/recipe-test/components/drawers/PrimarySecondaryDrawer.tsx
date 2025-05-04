@@ -1,7 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import Lottie from 'lottie-react';
-import DashboardAnimation from '../../animations/dashboard.json';
-import LeaderboardAnimation from '../../animations/leaderboard.json';
 import ReactMarkdown from 'react-markdown';
 import { documentToReactComponents } from '@contentful/rich-text-react-renderer';
 
@@ -10,7 +8,8 @@ interface PrimarySecondaryDrawerProps {
   drawerState: 'closed' | 'primary-open' | 'secondary-open';
   handleClosePrimaryDrawer: () => void;
   handleCloseSecondaryDrawer: () => void;
-  handleOpenSecondaryDrawer: () => void;
+  primaryAnimationData: any;
+  secondaryAnimationData: any;
   loading: boolean;
   communityPoolBalance: string;
   userBalance: number | null;
@@ -23,7 +22,8 @@ const PrimarySecondaryDrawer: React.FC<PrimarySecondaryDrawerProps> = ({
   drawerState,
   handleClosePrimaryDrawer,
   handleCloseSecondaryDrawer,
-  handleOpenSecondaryDrawer,
+  primaryAnimationData,
+  secondaryAnimationData,
   loading,
   communityPoolBalance,
   userBalance,
@@ -111,8 +111,8 @@ const PrimarySecondaryDrawer: React.FC<PrimarySecondaryDrawerProps> = ({
           <div className="drawer-container w-full h-full relative flex items-center justify-center">
             {/* Lottie Animation */}
             <Lottie
-              animationData={DashboardAnimation}
-              loop={true} // This animation loops indefinitely
+              animationData={primaryAnimationData}
+              loop
               className="w-full h-full"
             />
 
@@ -275,8 +275,8 @@ const PrimarySecondaryDrawer: React.FC<PrimarySecondaryDrawerProps> = ({
           <div className="drawer-container w-full h-full relative">
             {/* Leaderboard Lottie Animation */}
             <Lottie
-              animationData={LeaderboardAnimation}
-              loop={true}
+              animationData={secondaryAnimationData}
+              loop
               className="w-full h-full"
             />
 
