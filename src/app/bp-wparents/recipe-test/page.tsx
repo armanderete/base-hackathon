@@ -128,7 +128,7 @@ const visibleSteps = steps.slice(0, activeStepCount);
 const stepDrawerConfig = {
   step0: { primary: false, secondary: false },
   step1: { primary: true, secondary: false },
-  step2: { primary: false, secondary: false },
+  step2: { primary: true, secondary: false },
   step3: { primary: false, secondary: false },
   step4: { primary: false, secondary: false },
   step5: { primary: false, secondary: false },
@@ -179,7 +179,7 @@ export default function Page() {
     }
 
     // Prefetch neighbors
-    [currentStep - 1, currentStep + 1].forEach(i => {
+    [currentStep - 3, currentStep - 2, currentStep - 1, currentStep + 1, currentStep + 2, currentStep + 3].forEach(i => {
       if (visibleSteps[i]) {
         import(`./animations/${visibleSteps[i].videoLottie}`);
         if (visibleSteps[i].overlayLottie) {
