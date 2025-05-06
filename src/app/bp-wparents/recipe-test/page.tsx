@@ -250,6 +250,30 @@ export default function Page() {
   // Ensure the stepDrawerConfig is accessed with a valid key
   const currentStepKey = `step${currentStep}` as keyof typeof stepDrawerConfig;
 
+  // Function to adjust the margin-top of the green container
+  function adjustGreenContainerPosition() {
+    const greenContainer = document.querySelector('.green-container') as HTMLElement;
+    if (!greenContainer) return;
+
+    // Calculate the height of the viewport
+    const viewportHeight = window.innerHeight;
+
+    // Calculate the height of the document
+    const documentHeight = document.documentElement.clientHeight;
+
+    // Calculate the height of the browser's header
+    const headerHeight = viewportHeight - documentHeight;
+
+    // Set the margin-top of the green container
+    greenContainer.style.marginTop = `${headerHeight}px`;
+  }
+
+  // Adjust the position on page load
+  window.addEventListener('load', adjustGreenContainerPosition);
+
+  // Adjust the position on window resize
+  window.addEventListener('resize', adjustGreenContainerPosition);
+
   return (
     <div className="min-h-screen bg-black flex flex-col relative">
       {/* Mobile Green Container (Login/User Wallet) - in normal flow to push yellow down */}
